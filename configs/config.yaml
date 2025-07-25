@@ -1,0 +1,31 @@
+# Step 1: configs/config.yaml
+# Configuration file for hyperparameters and paths
+
+project:
+  name: vit_gpt2_captioning
+
+paths:
+  images: "data/images"
+  csv: "data/results.csv"
+  save_dir: "outputs"
+  best_model: "outputs/best_model.pt"
+
+hyperparameters:
+  epochs: 20
+  batch_size: 32
+  learning_rate: 5e-5
+  max_length: 40
+  num_workers: 4
+  patience: 3
+  model_save_metric: "bleu"
+  warmup_steps: 500
+
+model:
+  vit_model: "google/vit-base-patch16-224"
+  gpt2_model: "gpt2"
+
+metrics:
+  compute_bleu: true
+  compute_rouge: true
+  compute_meteor: true
+  compute_cosine: true
