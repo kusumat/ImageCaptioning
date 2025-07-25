@@ -1,57 +1,112 @@
-Downloading pre-trained BERTScore model files
-makefile
-Copy
-Edit
-tokenizer_config.json: 100%|████...|
-config.json: 100%|████...|
-vocab.json: 100%|████...|
-merges.txt: 100%|████...|
-tokenizer.json: 100%|████...|
-model.safetensors: 100%|████...|
-These progress bars show that bert_score is downloading a pre-trained roberta-large model:
+# ViT + GPT2 Image Captioning Project
 
-bert_score uses contextual embeddings (from RoBERTa) to compare predicted captions vs ground-truth.
+## 📁 Project Structure
 
-These files are cached locally, so next time it will be faster.
+```
+image_captioning/
+├── data/
+│   └── results.csv         # CSV file: image_name, comment
+├── datasets/
+│   └── flickr_dataset.py    # Dataset class with transform, padding, and tokenizer
+├── models/
+│   └── vit_gpt2.py           # ViT-GPT2 model integration
+├── training/
+│   ├── train.py              # Main training script
+│   └── metrics.py            # BLEU, ROUGE, METEOR, Cosine similarity
+├── utils/
+│   ├── device.py            # CPU/GPU detection
+│   ├── save.py              # Save best model and remove old ones
+│   └── plot.py              # Plot training loss and metrics
+├── inference/
+│   └── infer.py             # Generate captions using trained model
+└── README.md
+```
 
+---
 
-✅ Normal — this happens the first time you run bert_score.
+## 🚀 Features
 
-2️⃣ Roberta warning: “Some weights... newly initialized”
-pgsql
-Copy
-Edit
-Some weights of RobertaModel were not initialized from the model checkpoint at roberta-large and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
-You should probably TRAIN this model on a downstream task to be able to use it for predictions and inference.
-➡️ This is just a standard transformers warning:
+- **Transformer-based architecture**: Vision Transformer (ViT) encoder + GPT2 decoder
+- **Full metrics**: BLEU, ROUGE, METEOR, Cosine Similarity
+- **Cosine warmup scheduler**: With good initial learning rate and decay
+- **Robust training loop**: Early stopping + best checkpoint saving
+- **Device-aware**: GPU/MPS/CPU auto-selection
+- **Clean visualization**: Matplotlib plots for all training stats
+- **Modular design**: Easy to debug, extend or replace modules
 
-The RoBERTa encoder has an optional pooling layer (pooler) used for classification tasks.
+---
 
-bert_score doesn’t need it — so it’s uninitialized.
+## ⚖️ How to Run
 
-✅ Totally fine — ignore it for bert_score!
+### 1. Setup
 
-3️⃣ Your actual scores
-yaml
-Copy
-Edit
-BLEU-1: 0.4370 | BLEU-4: 0.0823 | BERTScore F1: 0.1968
-This is the interesting part:
+```bash
+pip install -r requirements.txt
+```
 
-BLEU-1 = 0.4370 → Unigram overlap is ~43%.
-→ Basic word matches are working.
+### 2. Prepare Data
 
-BLEU-4 = 0.0823 → Four-gram overlap is low (~8%).
-→ Your model generates basic word-level phrases but struggles with longer coherent sequences.
+- Place all Flickr30k images in `data/images/`
+- Ensure `results.csv` is in `data/` with format:
+  ```csv
+  image_name,comment
+  123.jpg,A child playing in the park.
+  ```
 
-BERTScore F1 = 0.1968 → Semantic similarity is ~0.20 (low-ish).
-→ Indicates generated captions are only somewhat similar in meaning.
+### 3. Train Model
 
-✅ Interpretation
-These are reasonable for an early prototype.
+```bash
+python training/train.py
+```
 
-BLEU-1 > 0.4 means your vocabulary & tokenization pipeline is working.
+### 4. Inference
 
-BLEU-4 low? → Typical in early training, since predicting long correct n-grams is harder.
+```python
+from inference.infer import generate_caption
+caption = generate_caption("data/images/sample.jpg", "checkpoints/best_model.pt")
+print(caption)
+```
 
-BERTScore helps you see if synonyms or paraphrases are better than raw word overlap.
+### 5. Plot Metrics
+
+```bash
+python utils/plot.py
+```
+
+---
+
+## 🏆 Results
+
+- Automatically saves:
+  - `loss.png` and `metrics.png`
+  - `checkpoints/best_model.pt`
+- Cleaned intermediate model files
+
+---
+
+## 🔧 Customization
+
+- **Hyperparameters** in `train.py`
+- **Tokenizer/model** from HuggingFace (`vit-base-patch16-224`, `gpt2`)
+- **Max caption length, padding** in `flickr_dataset.py`
+
+---
+
+## 🚜 Roadmap
+
+-
+
+---
+
+## ✨ Credits
+
+- Vision Transformer: [https://huggingface.co/google/vit-base-patch16-224](https://huggingface.co/google/vit-base-patch16-224)
+- GPT2 Language Model: [https://huggingface.co/gpt2](https://huggingface.co/gpt2)
+- Flickr30k Dataset: [https://shannon.cs.illinois.edu/DenotationGraph/](https://shannon.cs.illinois.edu/DenotationGraph/)
+
+---
+
+## 📢 Issues / Help?
+
+Please open a GitHub issue or ping me with your questions!
+
