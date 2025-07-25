@@ -41,7 +41,8 @@ image_captioning/
 ### 1. Setup
 
 ```bash
-pip install -r requirements.txt
+pip install --upgrade evaluate==0.4.0 datasets==2.18.0 -r requirements.txt
+
 ```
 
 ### 2. Prepare Data
