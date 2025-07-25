@@ -1,0 +1,9 @@
+torch>=2.0.0
+transformers>=4.40.0
+datasets
+scikit-learn
+nltk
+rouge-score
+Pillow
+matplotlib
+tqdm
